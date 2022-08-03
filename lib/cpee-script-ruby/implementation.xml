@@ -1,0 +1,24 @@
+<description datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns="http://riddl.org/ns/description/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <message name="res">
+    <parameter name="id" type="string"/>
+  </message>
+  <message name="script">
+    <parameter name="context" mimetype="application/json"/>
+    <parameter name="code" mimetype="text/plain"/>
+    <zeroOrMore>
+      <parameter name="result" mimetype="*"/>
+    </zeroOrMore>
+  </message>
+  <message name="result">
+    <parameter name="context" mimetype="application/json"/>
+  </message>
+
+  <resource>
+    <post in="script" out="res"/>
+    <resource>
+      <get out="result"/>
+      <sse/>
+    </resource>
+  </resource>
+
+</description>

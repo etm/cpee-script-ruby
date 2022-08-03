@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+require 'rubygems'
+p
+if File.exists?(File.join(__dir__,'..','lib','cpee-script-ruby','implementation.rb'))
+  require_relative (File.join(__dir__,'..','lib','cpee-script-ruby','implementation'))
+else
+  require 'cpee-script-ruby/implementation'
+end
+
+options = {
+  :host => 'localhost',
+  :port => 9297,
+  :secure => false
+}
+
+Riddl::Server.new(CPEE::Script::SERVER, options) do
+  accessible_description true
+  cross_site_xhr true
+
+  use CPEE::Script::implementation(@riddl_opts)
+end.loop!
