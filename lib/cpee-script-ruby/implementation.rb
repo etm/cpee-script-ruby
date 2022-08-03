@@ -100,17 +100,17 @@ module CPEE
     class Nots < Riddl::SSEImplementation #{{{
       def onopen
         @ssec = @a[0]
-        @key = @r[-1]
-        if ssec[@key]
-          ssec[@key].close
-          ssec.delete(@key)
+        @key = @r[-2]
+        if @ssec[@key]
+          @ssec[@key].close
+          @ssec.delete(@key)
         end
 
-        ssec[@key] = self
+        @ssec[@key] = self
       end
 
       def onclose
-        ssec.delete(@key)
+        @ssec.delete(@key)
       end
     end #}}}
 
@@ -124,7 +124,13 @@ module CPEE
           run Store, opts[:exec], opts[:sse_connections] if post 'script'
           on resource do
             run Get, opts[:exec] if get
-            run Nots, opts[:sse_connections] if sse
+            on resource 'sse' do
+              begin
+              run Nots, opts[:sse_connections] if sse
+              rescue => e
+                p e
+              end
+            end
           end
         end
       end

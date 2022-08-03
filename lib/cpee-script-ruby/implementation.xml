@@ -17,7 +17,9 @@
     <post in="script" out="res"/>
     <resource>
       <get out="result"/>
-      <sse/>
+      <resource relative="sse">
+        <sse/>
+      </resource>
     </resource>
   </resource>
 
