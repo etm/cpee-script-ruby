@@ -18,6 +18,8 @@ code = <<-END
   sleep 3
 END
 
+puts JSON::pretty_generate(ms)
+
 client = Riddl::Client.new('http://localhost:9297')
 status, res, headers = client.post [
   Riddl::Parameter::Complex.new('context','application/json',JSON::pretty_generate(ms)),

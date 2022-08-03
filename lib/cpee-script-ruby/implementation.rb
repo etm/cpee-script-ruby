@@ -74,6 +74,10 @@ module CPEE
           result = simplify_result(@p)
           @a[0][uuid][1].instance_eval(code)
           @a[0][uuid][0] = true
+          if @a[1][uuid]
+            @a[1][uuid].send('ready')
+            @a[1].delete(uuid)
+          end
         end
         Riddl::Parameter::Simple.new('id',uuid)
       end
@@ -83,9 +87,11 @@ module CPEE
       def response
         uuid = @r[-1]
         if @a[0][uuid] && @a[0][uuid][0]
-          Riddl::Parameter::Complex.new('context','application/json',JSON::generate(@a[0][uuid][1]))
+          ret = @a[0][uuid][1]
+          @a[0].delete(uuid)
+          Riddl::Parameter::Complex.new('context','application/json',JSON::generate(ret))
         else
-          @status = 299
+          @status = 304
           nil
         end
       end
@@ -93,19 +99,18 @@ module CPEE
 
     class Nots < Riddl::SSEImplementation #{{{
       def onopen
-        @opts = @a[0]
+        @ssec = @a[0]
         @key = @r[-1]
-        if @opts[:sse_connections][@key]
-          @opts[:sse_connections][@key].close
-          @opts[:sse_connections].delete(@key)
+        if ssec[@key]
+          ssec[@key].close
+          ssec.delete(@key)
         end
 
-        @opts[:sse_connections]
-        @opts[:sse_connections][@key] = self
+        ssec[@key] = self
       end
 
       def onclose
-        @opts[:sse_connections].delete(@key)
+        ssec.delete(@key)
       end
     end #}}}
 
@@ -116,10 +121,10 @@ module CPEE
 
       Proc.new do
         on resource do
-          run Store, opts[:exec] if post 'script'
+          run Store, opts[:exec], opts[:sse_connections] if post 'script'
           on resource do
-            run Get, opts[:exec]if get
-            run Nots, opts if sse
+            run Get, opts[:exec] if get
+            run Nots, opts[:sse_connections] if sse
           end
         end
       end
