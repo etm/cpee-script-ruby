@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require 'rubygems'
 p
-if File.exists?(File.join(__dir__,'..','lib','cpee-script-ruby','implementation.rb'))
+if File.exist?(File.join(__dir__,'..','lib','cpee-script-ruby','implementation.rb'))
   require_relative (File.join(__dir__,'..','lib','cpee-script-ruby','implementation'))
 else
   require 'cpee-script-ruby/implementation'
